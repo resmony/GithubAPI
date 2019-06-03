@@ -1,0 +1,36 @@
+﻿@using LiteDB
+@{
+    ViewData["Title"] = "Favorites";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Favoritos</h1>
+<br />
+@using (var db = new LiteDatabase(@"Data/favorites.db")) {
+    var repos = db.GetCollection<Item>("items");
+    var results = repos.Find(x => x.name != null);
+    if (!results.GetEnumerator().MoveNext()) {
+        <div class="error-warning">
+            <h3>Nenhum repositório favorito</h3>
+        </div>
+    } else {
+    <table class="table table-sm table-hover table-borderless m-1">
+        <thead>
+            <tr>
+                <th>Nome</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var result in results) {          
+            <tr>
+                <td>@Html.ActionLink(result.name, "RepInfo", result)</td>        
+                <td colspan="5">
+                   <span class="btn btn-outline-danger">@Html.ActionLink("Remover", "RemoveFromFavs", "Repositories", result)</span>
+                </td>
+            </tr>
+            }
+        </tbody>
+
+    </table>
+    }
+}
